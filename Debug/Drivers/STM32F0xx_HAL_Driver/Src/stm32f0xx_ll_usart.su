@@ -1,0 +1,5 @@
+stm32f0xx_ll_usart.c:154:13:LL_USART_DeInit	0	static
+stm32f0xx_ll_usart.c:260:13:LL_USART_Init	32	static
+stm32f0xx_ll_usart.c:416:6:LL_USART_StructInit	0	static
+stm32f0xx_ll_usart.c:440:13:LL_USART_ClockInit	12	static
+stm32f0xx_ll_usart.c:499:6:LL_USART_ClockStructInit	0	static
