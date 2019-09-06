@@ -1,0 +1,2 @@
+# intelligent-closestool
+一款实用stm32f0芯片,采用st公司的HAL库及freeRTos为基础来开发的智能马桶主板软件,(包含软件硬件).采用市场较为流行的即热式模块
