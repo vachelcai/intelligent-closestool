@@ -140,8 +140,7 @@ int main(void)
 	LL_GPIO_SetOutputPin(ZQ_JRS_GPIO_Port,ZQ_JRS_Pin);
 	LL_GPIO_SetOutputPin(HG_JRS_GPIO_Port,HG_JRS_Pin);
 	
-	if(!LL_GPIO_IsInputPinSet(AJ_2_GPIO_Port,AJ_2_Pin))
-		is_noAC=false;
+	is_noAC=!LL_GPIO_IsInputPinSet(AJ_1_GPIO_Port,AJ_1_Pin);
   /* USER CODE END 2 */
 
   /* USER CODE BEGIN RTOS_MUTEX */
@@ -470,7 +469,7 @@ static void MX_TIM16_Init(void)
   /* USER CODE BEGIN TIM16_Init 1 */
 
   /* USER CODE END TIM16_Init 1 */
-  TIM_InitStruct.Prescaler = 2400;
+  TIM_InitStruct.Prescaler = 24000;
   TIM_InitStruct.CounterMode = LL_TIM_COUNTERMODE_UP;
   TIM_InitStruct.Autoreload = 1000;
   TIM_InitStruct.ClockDivision = LL_TIM_CLOCKDIVISION_DIV1;
@@ -1027,6 +1026,7 @@ void StartDefaultTask(void const * argument)
 		osEvent rec=	osMessageGet(clearQueHandle,osWaitForever);
 		if(rec.status==osEventMessage){
 			clearState=rec.value.v;
+			LL_GPIO_SetOutputPin(DCS_GPIO_Port,DCS_Pin);
 			switch(rec.value.v){
 				case 0x34:	//润壁
 					LL_GPIO_SetOutputPin(MCF_1_GPIO_Port,MCF_1_Pin);
@@ -1054,7 +1054,7 @@ void StartDefaultTask(void const * argument)
 					LL_GPIO_SetOutputPin(MCF_4_GPIO_Port,MCF_4_Pin);
 					osDelay(MCF_PULE_MS);
 					LL_GPIO_ResetOutputPin(MCF_4_GPIO_Port,MCF_4_Pin);
-					//下冲
+					//上冲
 					LL_GPIO_SetOutputPin(MCF_1_GPIO_Port,MCF_1_Pin);
 					osDelay(MCF_PULE_MS);
 					LL_GPIO_ResetOutputPin(MCF_1_GPIO_Port,MCF_1_Pin);
@@ -1080,7 +1080,8 @@ void StartDefaultTask(void const * argument)
 					LL_GPIO_SetOutputPin(MCF_4_GPIO_Port,MCF_4_Pin);
 					osDelay(MCF_PULE_MS);
 					LL_GPIO_ResetOutputPin(MCF_4_GPIO_Port,MCF_4_Pin);
-					//下冲
+				//osDelay(300);
+					//上冲
 					LL_GPIO_SetOutputPin(MCF_1_GPIO_Port,MCF_1_Pin);
 					osDelay(MCF_PULE_MS);
 					LL_GPIO_ResetOutputPin(MCF_1_GPIO_Port,MCF_1_Pin);
@@ -1091,6 +1092,7 @@ void StartDefaultTask(void const * argument)
 					
 					break;
 			}
+						LL_GPIO_ResetOutputPin(DCS_GPIO_Port,DCS_Pin);
 			clearState=0;
 		}
   }
@@ -1156,6 +1158,7 @@ void StartCTR(void const * argument)
 					HAL_FLASH_Unlock();
 				}
 				//开始写入
+				//toWriteData[6]=tim
 				for(int i=0;i<8;i++){
 					HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD,JK_LIST_BEGIN_ADD+32*jkListWrite+4*i,toWriteData[i]);
 				}

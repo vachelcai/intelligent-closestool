@@ -310,7 +310,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
-            <Optim>4</Optim>
+            <Optim>1</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>1</OneElfS>
@@ -335,7 +335,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F030x8,USE_HAL_DRIVER,STM32F030x8,USE_FULL_LL_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>                ../Core/Inc;                            ../Drivers/STM32F0xx_HAL_Driver/Inc;                            ../Drivers/STM32F0xx_HAL_Driver/Inc/Legacy;                            ../Middlewares/Third_Party/FreeRTOS/Source/include;                            ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;                            ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM0;                            ../Drivers/CMSIS/Device/ST/STM32F0xx/Include;                            ../Drivers/CMSIS/Include;                            ../Inc</IncludePath>
+              <IncludePath>../Core/Inc;                             ../Drivers/STM32F0xx_HAL_Driver/Inc;                             ../Drivers/STM32F0xx_HAL_Driver/Inc/Legacy;                             ../Middlewares/Third_Party/FreeRTOS/Source/include;                             ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;                             ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM0;                             ../Drivers/CMSIS/Device/ST/STM32F0xx/Include;                             ../Drivers/CMSIS/Include;                             ../Inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>

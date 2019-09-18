@@ -236,9 +236,9 @@ bool FSFStep(){
 }
 
 void PJTo(uint16_t pos){
-	if(!_pj.busy && (pos==_pj.pos+PJ_JXF || pos== _pj.pos -PJ_JXF)){
-		_pj.to=UINT16_MAX;
-		_pj.busy=pdFAIL;
+	if(!_pj.busy && ( pos+PJ_JXF== _pj.pos )){
+		_pj.to=_pj.pos;
+		_pj.busy=false;
 		//Í£ÁË¼ÆÊ±Æ÷
 		//LL_TIM_DisableIT_UPDATE(TIM6);
 		LL_TIM_DisableCounter(TIM6);
@@ -249,7 +249,7 @@ void PJTo(uint16_t pos){
 		_pj.to=pos+PJ_JXF;
 	else _pj.to=pos;
 	
-	_pj.busy=pdTRUE;
+	_pj.busy=true;
 	LL_TIM_EnableIT_UPDATE(TIM6);
 	LL_TIM_EnableCounter(TIM6);
 }

@@ -75,7 +75,7 @@ void StartRemoteControl(void const * argument){
 	//printf("haspe");
 	for(;;){
 		osSemaphoreWait(RCTigHandle,osWaitForever);
-		LL_GPIO_TogglePin(D1_GPIO_Port,D1_Pin);
+		//LL_GPIO_TogglePin(D1_GPIO_Port,D1_Pin);
 			uint8_t indCode=remoteCtrlData[1]^remoteCtrlData[2]^remoteCtrlData[3]^remoteCtrlData[4]^remoteCtrlData[5]^remoteCtrlData[6]^remoteCtrlData[7];
 			if(indCode== remoteCtrlData[8]){	//格式正确
 				if(remoteCtrlData[1]==remoteCtrlAdd[0] && remoteCtrlData[2]==remoteCtrlAdd[1]){	//地址验证
@@ -149,6 +149,7 @@ void StartRemoteControl(void const * argument){
 								case 0x45:	//小冲
 									if(clearState==0 || clearState ==0x34)
 										osMessagePut(clearQueHandle,0x45,0);
+									break;
 								case 0x56:	//大冲
 									if(clearState==56) break;
 								xQueueReset(clearQueHandle);
@@ -198,7 +199,9 @@ void StartRemoteControl(void const * argument){
 						remoteCtrlBackData[8]=remoteCtrlBackData[1]^remoteCtrlBackData[2]^remoteCtrlBackData[3]^remoteCtrlBackData[4];
 						remoteCtrlBackData[9]=0;
 						//end 遥控收发部分
+						LL_DMA_DisableChannel(DMA1,LL_DMA_CHANNEL_4);
 						LL_DMA_SetDataLength(DMA1,LL_DMA_CHANNEL_4,10);
+						FMQ();
 					}else if(remoteCtrlData[3]==0x01){ //格式为 01 后面4个为int32 为秒数,当机器记一次读到秒数时,自动与系统那边结合
 						//begin 健康数据传输部分
 						if(*timeStamp ==0){
@@ -208,18 +211,19 @@ void StartRemoteControl(void const * argument){
 						if(jkListRead!=jkListWrite){
 							uint32_t tbegAdd=JK_LIST_BEGIN_ADD+jkListRead*32;
 							for(int i=0;i<32;i++){
-								remoteCtrlData[i]=*((uint8_t *) (tbegAdd+i));
+								remoteCtrlBackData[i]=*((uint8_t *) (tbegAdd+i));
 							}
 							if(++jkListRead==JK_MAX_NUM) jkListRead=0;
 						}else{
 							for(int i=0;i<32;i++){
-								remoteCtrlData[i]=0;
+								remoteCtrlBackData[i]=0;
 							}
-							LL_DMA_SetDataLength(DMA1,LL_DMA_CHANNEL_4,32);
 						}
+						LL_DMA_DisableChannel(DMA1,LL_DMA_CHANNEL_4);
+						LL_DMA_SetDataLength(DMA1,LL_DMA_CHANNEL_4,32);
 						//end 健康数据传输部分
 					}
-					FMQ();
+					
 				}else if(remoteCtrlData[1]==0x56 && remoteCtrlData[2]==0x38) {
 					//配对地址 暂定 0x56 0x38
 				}
@@ -232,6 +236,7 @@ void StartRemoteControl(void const * argument){
 				remoteCtrlBackData[1]=0x56;
 				remoteCtrlBackData[2]=0x56;
 				remoteCtrlBackData[3]=0x00;
+						LL_DMA_DisableChannel(DMA1,LL_DMA_CHANNEL_4);
 				LL_DMA_SetDataLength(DMA1,LL_DMA_CHANNEL_4,4);
 			}
 				LL_DMA_DisableChannel(DMA1,LL_DMA_CHANNEL_4);

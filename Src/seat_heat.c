@@ -7,8 +7,9 @@ extern osMessageQId jkQueHandle;
 
 extern uint8_t setTemperature;
 extern ADC_HandleTypeDef hadc;
-_Bool isSit=0;
+bool isSit=false;
 
+/*
 int16_t tempList[][2]={
 	{-10,3353},
 	{-5,3197},
@@ -30,8 +31,8 @@ int16_t tempList[][2]={
 	{75,672},
 	{80,598}
 };
-
-uint32_t sitData[12];
+*/
+//uint32_t sitData[12];
 uint8_t _sitDataPos=0;
 uint32_t tmin=0,tmax=0,tsum=0;
 void sitLoop(void const * argument){

@@ -4,7 +4,7 @@
 ///
 ///脉冲阀部分配置
 ///
-#define MCF_PULE_MS	5				//脉冲阀 脉冲ms数
+#define MCF_PULE_MS	50				//脉冲阀 脉冲ms数
 #define MCF_RB_MS		5000		//脉冲阀 润壁ms数
 
 #define MCF_XC_U1_MS	8000		//小冲 1步
@@ -32,10 +32,10 @@
 ///分水阀部分
 ///
 #define FSF_MAX				2000	//8步走法
-#define FSF_ZEROP_POS	900	//中间挡位
+#define FSF_ZEROP_POS	1100	//中间挡位
 #define FSF_MIN				400		//最小挡位
 #define FSF_JXF				30		//分水阀间隙
-#define FSF_LEVEL_	((FSF_MAX/2-PJ_MIN)/10)
-#define FSF_LEVEL(N,ISW)	(ISW?(FSF_ZEROP_POS+(FSF_MIN+N*FSF_LEVEL_)):(FSF_ZEROP_POS-(FSF_MIN+N*FSF_LEVEL_)))
+#define FSF_LEVEL_	((FSF_MAX-PJ_MIN-FSF_ZEROP_POS)/10)	//留一个空位
+#define FSF_LEVEL(N,ISW)	(ISW?(FSF_ZEROP_POS+FSF_MIN-N*FSF_LEVEL_):(FSF_ZEROP_POS-FSF_MIN+N*FSF_LEVEL_))
 
 #endif

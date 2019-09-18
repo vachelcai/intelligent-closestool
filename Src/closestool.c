@@ -25,7 +25,7 @@ extern _Bool message;	//按摩
 extern _Bool startHotWater;
 extern osTimerId hotwaterHandle;
 _Bool isBottom=0;
-_Bool isHGHot=0;
+//_Bool isHGHot=0;
 _Bool hasReceive=0;
 uint8_t EIWHReceiveData[8];
 uint8_t receiveWrongTime=0;
@@ -49,12 +49,14 @@ void hotWaterLoop(void const * argument){
 		}
 	}
 	if(closeHotWater){
-		EIWHReceiveData[2]=0x00;
-		EIWHReceiveData[7]=1;
+		EIWHsendData[2]=0x00;
+		EIWHsendData[7]=1;
 	}else{
-		EIWHReceiveData[2]=waterTemperature;
-		EIWHReceiveData[7]=1+waterTemperature;
+		EIWHsendData[2]=waterTemperature;
+		EIWHsendData[7]=1+waterTemperature;
 	}
+	LL_DMA_DisableChannel(DMA1,LL_DMA_CHANNEL_2);
+	LL_DMA_SetDataLength(DMA1,LL_DMA_CHANNEL_2,8);
 	DMA1->IFCR = LL_DMA_IFCR_CGIF2 | LL_DMA_IFCR_CTCIF2 | LL_DMA_IFCR_CHTIF2 | LL_DMA_IFCR_CTEIF2;
 	LL_USART_ClearFlag_TC(USART1);
 	LL_USART_EnableIT_TC(USART1);
@@ -70,17 +72,17 @@ int8_t _closestoolState=0;
 int8_t ClosestoolGetState(){
 	return _closestoolState;
 }
-
+uint32_t endTick=0,nowTick=0;
 void Startclosestool(void const * argument){
 	osEvent toe;
-	uint32_t endTick=0,nowTick=0;
+	
 	_Bool ish=0;
 	//初始化即热式
 	LL_DMA_DisableChannel(DMA1,LL_DMA_CHANNEL_2);
 	//DMA1->IFCR = LL_DMA_IFCR_CGIF2 | LL_DMA_IFCR_CTCIF2 | LL_DMA_IFCR_CHTIF2 | LL_DMA_IFCR_CTEIF2; /* Clear previous flags */
 	LL_DMA_SetPeriphAddress(DMA1,LL_DMA_CHANNEL_2,(uint32_t)&USART1->TDR);
 	LL_DMA_SetMemoryAddress(DMA1,LL_DMA_CHANNEL_2,(uint32_t) EIWHsendData);
-	LL_DMA_SetDataLength(DMA1,LL_DMA_CHANNEL_2,8);
+	//LL_DMA_SetDataLength(DMA1,LL_DMA_CHANNEL_2,8);
 	FMQ();
 	stepperInit();
 	osMessagePut(clearQueHandle,0xff,0);
@@ -115,7 +117,10 @@ void Startclosestool(void const * argument){
 					}while(toe.value.v!=0x03);	// sCtrlQueHandle 收到 FSF 闲下来的信号
 					//进入清洗部分
 					_closestoolState=2;
-					if(message)	LL_GPIO_SetOutputPin(QB_GPIO_Port,QB_Pin);
+					if(message)	{
+						LL_GPIO_SetOutputPin(QB_GPIO_Port,QB_Pin);
+						PJTo(PJ_LEVEL(pjpos)+PJ_MESSAGE);
+					}
 					nowTick=osKernelSysTick();
 					endTick=nowTick+60*1000;
 					
@@ -154,7 +159,7 @@ void Startclosestool(void const * argument){
 					PJTo(0);
 					do{
 						toe=osMessageGet(sCtrlQueHandle,osWaitForever);
-					}while(toe.value.v==0x02);
+					}while(toe.value.v!=0x02);
 					PJStop();
 					osDelay(3000);	//清洗喷头3s
 					DCF_OFF();
@@ -166,30 +171,36 @@ void Startclosestool(void const * argument){
 				
 					nowTick=osKernelSysTick();
 					endTick=nowTick+90*1000;
+				
+					LL_TIM_EnableIT_UPDATE(TIM16);
+					LL_TIM_EnableCounter(TIM16);
 						
 						while(nowTick<endTick || (endTick<90*1000 && nowTick> UINT32_MAX -90*1000 )){
-							if(isHGHot){
-								HG_JRS_ON();
-								LL_TIM_EnableIT_UPDATE(TIM16);
-								LL_TIM_EnableCounter(TIM16);
-							}
-								LL_GPIO_SetOutputPin(HG_JRS_GPIO_Port,HG_JRS_Pin);
 							toe = osMessageGet(sCtrlQueHandle,endTick-nowTick);
+							if(toe.status==osEventTimeout) break;
 							nowTick=osKernelSysTick();
 							if(toe.value.v	==0xff) break;
 							if(toe.value.v ==0x66){
+								//TODO:改HG_JRS_pin为PWM输出
 								if(ish){
+									if(windWarm!=0)
 									HG_JRS_ON();
-									LL_TIM_SetCounter(TIM16,2000*windWarm);
+									//LL_TIM_SetCounter(TIM16,2000*windWarm);
+									LL_TIM_SetAutoReload(TIM16,2000*windWarm);
 								}else{
+									if(windWarm!=4)
 									HG_JRS_OFF();
-									LL_TIM_SetCounter(TIM16,2000*(4-windWarm));
+									//LL_TIM_SetCounter(TIM16,2000*(4-windWarm));
+									LL_TIM_SetAutoReload(TIM16,2000*(4-windWarm));
 								}
 								ish=!ish;
 							}
 						}
 					
 					LL_GPIO_ResetOutputPin(HG_FAN_GPIO_Port,HG_FAN_Pin);
+						HG_JRS_OFF();
+						LL_TIM_DisableCounter(TIM16);
+						_closestoolState=0;
 					break;
 			}
 		}
