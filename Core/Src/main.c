@@ -26,6 +26,7 @@
 /* USER CODE BEGIN Includes */
 #include "seat_heat.h"
 #include "eeprom.h"
+#include "stm32f0xx_hal_pwr.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -139,7 +140,6 @@ int main(void)
   /* USER CODE BEGIN 2 */
 	LL_GPIO_SetOutputPin(ZQ_JRS_GPIO_Port,ZQ_JRS_Pin);
 	LL_GPIO_SetOutputPin(HG_JRS_GPIO_Port,HG_JRS_Pin);
-	
 	is_noAC=!LL_GPIO_IsInputPinSet(AJ_1_GPIO_Port,AJ_1_Pin);
   /* USER CODE END 2 */
 
