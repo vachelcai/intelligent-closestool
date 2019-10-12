@@ -239,9 +239,8 @@ void PJTo(uint16_t pos){
 	if(!_pj.busy && ( pos+PJ_JXF== _pj.pos )){
 		_pj.to=_pj.pos;
 		_pj.busy=false;
-		//Í£ÁË¼ÆÊ±Æ÷
-		//LL_TIM_DisableIT_UPDATE(TIM6);
 		LL_TIM_DisableCounter(TIM6);
+		osMessagePut(sCtrlQueHandle,0x02,0);
 		return;
 	}
 	_pj.clockwise=pos>_pj.pos;
@@ -256,9 +255,10 @@ void PJTo(uint16_t pos){
 
 void FSFTo(uint16_t pos){
 	if(pos==_fsf.pos){
-		_fsf.to=UINT16_MAX;
 		_fsf.busy=pdFAIL;
 		LL_TIM_DisableCounter(TIM14);
+		osMessagePut(sCtrlQueHandle,0x03,0);
+		return;
 	}
 	_fsf.to=pos;
 	_fsf.busy=pdTRUE;
