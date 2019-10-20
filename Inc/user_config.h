@@ -35,7 +35,7 @@
 #define FSF_ZEROP_POS	1100	//中间挡位
 #define FSF_MIN				400		//最小挡位
 #define FSF_JXF				30		//分水阀间隙
-#define FSF_LEVEL_	((FSF_MAX-PJ_MIN-FSF_ZEROP_POS)/10)	//留一个空位
+#define FSF_LEVEL_	((FSF_MAX-FSF_MIN-FSF_ZEROP_POS)/10)	//留一个空位
 #define FSF_LEVEL(N,ISW)	(ISW?(FSF_ZEROP_POS+FSF_MIN-N*FSF_LEVEL_):(FSF_ZEROP_POS-FSF_MIN+N*FSF_LEVEL_))
 
 #endif
