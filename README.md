@@ -2,8 +2,10 @@
 一款实用stm32f0芯片,采用st公司的HAL库及freeRTos为基础来开发的智能马桶主板软件,(包含软件硬件).采用市场较为流行的即热式模块.
 
 # pcb
-pcb部分使用easyeda https://lceda.cn/weiqqba/ji-re-shi-mai-chong-fa-chong-shui-zhi-neng-ma-tong
+pcb部分使用easyeda https://lceda.cn/editor#id=0ef7880f5eed44a698f3014726256795
 这是此次的电路板,部分电阻值可能没用修改,发现时修改.各位也可以给我留言
+pcb部分推荐可以做部分优化,在12v控制q1,q2,q3,q4,q5的开关管都加一个下拉电阻,还有蓝牙模块可以更换为2.4g模块,类似nref24l01,就可以正常通用数据库.
+
 
 #app flutter
 手机app进去后修改conBan.dart页面的
